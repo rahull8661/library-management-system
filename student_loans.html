@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}My loans{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My loans</h1>
+    <p class="page-sub">Books returned after their due date carry a ₹5/day fine.</p>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Currently borrowed</h2>
+    </div>
+
+    {% if active %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Issued on</th>
+                <th>Due on</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in active %}
+            <tr>
+                <td>{{ l.book_code or "—" }}</td>
+                <td class="cell-strong">{{ l.book_title }}</td>
+                <td>{{ l.issue_date }}</td>
+                <td>
+                    {% if l.due_date < today %}
+                        <span class="badge badge-warning">{{ l.due_date }} (overdue)</span>
+                    {% else %}
+                        {{ l.due_date }}
+                    {% endif %}
+                </td>
+                <td class="cell-actions">
+                    {% if l.pdf_filename %}
+                        <a href="{{ url_for('read_book_pdf', book_id=l.book_id) }}" class="link" target="_blank">Read</a>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('student_return', transaction_id=l.id) }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Return</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Nothing borrowed right now. <a href="{{ url_for('student_books') }}" class="link">Browse the catalogue</a>.</div>
+    {% endif %}
+</div>
+
+<div class="panel" style="margin-top: 24px;">
+    <div class="panel-header">
+        <h2>Past loans</h2>
+    </div>
+
+    {% if history %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Issued on</th>
+                <th>Returned on</th>
+                <th>Fine</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in history %}
+            <tr>
+                <td>{{ l.book_code or "—" }}</td>
+                <td class="cell-strong">{{ l.book_title }}</td>
+                <td>{{ l.issue_date }}</td>
+                <td>{{ l.return_date }}</td>
+                <td>{{ "₹" + l.fine|string if l.fine else "—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No past loans yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

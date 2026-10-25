@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Welcome, {{ session.get('student_name') }}</h1>
+    <p class="page-sub">Here's where things stand with your account.</p>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ active_loans }}</span>
+        <span class="stat-label">Books currently borrowed</span>
+    </div>
+    <div class="stat-card {{ 'stat-card-warning' if overdue > 0 }}">
+        <span class="stat-value">{{ overdue }}</span>
+        <span class="stat-label">Overdue</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ max_loans - active_loans }}</span>
+        <span class="stat-label">Books you can still borrow</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">₹{{ total_fines }}</span>
+        <span class="stat-label">Fines paid to date</span>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Currently on loan</h2>
+        <a href="{{ url_for('student_loans') }}" class="link">View all</a>
+    </div>
+
+    {% if loans %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Due on</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in loans %}
+            <tr>
+                <td>{{ l.book_code or "—" }}</td>
+                <td class="cell-strong">{{ l.book_title }}</td>
+                <td>{{ l.due_date }}</td>
+                <td>
+                    {% if l.due_date < today %}
+                        <span class="badge badge-warning">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-active">On loan</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if l.pdf_filename %}
+                        <a href="{{ url_for('read_book_pdf', book_id=l.book_id) }}" class="link" target="_blank">Read</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">You don't have any books out right now. <a href="{{ url_for('student_books') }}" class="link">Browse the catalogue</a>.</div>
+    {% endif %}
+</div>
+{% endblock %}

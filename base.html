@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Library{% endblock %} · Bookkeeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+{% if session.get('user') or session.get('student_id') %}
+<div class="app-shell">
+    {% if session.get('user') %}
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">Bk</span>
+            <span class="brand-name">Bookkeeper</span>
+        </div>
+        <nav class="nav">
+            <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint=='dashboard' }}">Dashboard</a>
+            <a href="{{ url_for('books') }}" class="{{ 'active' if request.endpoint in ['books','add_book','edit_book'] }}">Books</a>
+            <a href="{{ url_for('members') }}" class="{{ 'active' if request.endpoint in ['members','add_member'] }}">Members</a>
+            <a href="{{ url_for('issue_book') }}" class="{{ 'active' if request.endpoint=='issue_book' }}">Issue a Book</a>
+            <a href="{{ url_for('return_book') }}" class="{{ 'active' if request.endpoint=='return_book' }}">Return a Book</a>
+            <a href="{{ url_for('transactions') }}" class="{{ 'active' if request.endpoint=='transactions' }}">Transaction Log</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="signed-in-as">Signed in as <strong>{{ session.get('user') }}</strong></div>
+            <a href="{{ url_for('logout') }}" class="logout-link">Log out</a>
+        </div>
+    </aside>
+    {% else %}
+    <aside class="sidebar sidebar-student">
+        <div class="brand">
+            <span class="brand-mark">Bk</span>
+            <span class="brand-name">Bookkeeper</span>
+        </div>
+        <nav class="nav">
+            <a href="{{ url_for('student_dashboard') }}" class="{{ 'active' if request.endpoint=='student_dashboard' }}">Dashboard</a>
+            <a href="{{ url_for('student_books') }}" class="{{ 'active' if request.endpoint=='student_books' }}">Browse Books</a>
+            <a href="{{ url_for('student_loans') }}" class="{{ 'active' if request.endpoint=='student_loans' }}">My Loans</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="signed-in-as">Signed in as <strong>{{ session.get('student_name') }}</strong></div>
+            <a href="{{ url_for('student_logout') }}" class="logout-link">Log out</a>
+        </div>
+    </aside>
+    {% endif %}
+
+    <main class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+{% else %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-stack flash-stack-standalone">
+        {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Student login{% endblock %}
+
+{% block auth_content %}
+<div class="auth-screen">
+    <div class="auth-card">
+        <div class="auth-mark">Bk</div>
+        <h1>Student login</h1>
+        <p class="auth-sub">Sign in to borrow and return books.</p>
+
+        <form method="POST" class="auth-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </form>
+
+        <p class="auth-hint">Demo account — username: <code>aisha</code>, password: <code>student123</code></p>
+        <p class="auth-switch">New here? <a href="{{ url_for('student_signup') }}" class="link">Create an account</a></p>
+        <p class="auth-switch">Librarian? <a href="{{ url_for('login') }}" class="link">Log in here</a></p>
+    </div>
+</div>
+{% endblock %}

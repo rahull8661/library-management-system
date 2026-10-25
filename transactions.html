@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Transaction log{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Transaction log</h1>
+    <p class="page-sub">Every issue and return, most recent first.</p>
+</div>
+
+<div class="panel">
+    {% if transactions %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Issued on</th>
+                <th>Due on</th>
+                <th>Returned on</th>
+                <th>Fine</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.book_code or "—" }}</td>
+                <td class="cell-strong">{{ t.book_title }}</td>
+                <td>{{ t.member_name }}</td>
+                <td>{{ t.issue_date }}</td>
+                <td>{{ t.due_date }}</td>
+                <td>
+                    {% if t.return_date %}
+                        {{ t.return_date }}
+                    {% elif t.due_date < today %}
+                        <span class="badge badge-warning">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-active">On loan</span>
+                    {% endif %}
+                </td>
+                <td>{{ "₹" + t.fine|string if t.fine else "—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No transactions recorded yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

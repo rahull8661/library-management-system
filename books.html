@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<div class="page-header page-header-row">
+    <div>
+        <h1>Books</h1>
+        <p class="page-sub">The full catalogue.</p>
+    </div>
+    <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add a book</a>
+</div>
+
+<form method="GET" class="search-bar">
+    <input type="text" name="q" placeholder="Search by Book ID, title, author, or category" value="{{ query }}">
+    <button type="submit" class="btn btn-secondary">Search</button>
+    {% if query %}<a href="{{ url_for('books') }}" class="link">Clear</a>{% endif %}
+</form>
+
+<div class="panel">
+    {% if books %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>ISBN</th>
+                <th>Available</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in books %}
+            <tr>
+                <td>{{ b.book_code or "—" }}</td>
+                <td class="cell-strong">{{ b.title }}</td>
+                <td>{{ b.author }}</td>
+                <td>{{ b.category or "—" }}</td>
+                <td>{{ b.isbn or "—" }}</td>
+                <td>
+                    {% if b.available_copies > 0 %}
+                        <span class="badge badge-active">{{ b.available_copies }} / {{ b.total_copies }}</span>
+                    {% else %}
+                        <span class="badge badge-warning">0 / {{ b.total_copies }}</span>
+                    {% endif %}
+                </td>
+                <td class="cell-actions">
+                    {% if b.pdf_filename %}
+                        <a href="{{ url_for('read_book_pdf', book_id=b.id) }}" class="link" target="_blank">Read</a>
+                    {% endif %}
+                    <a href="{{ url_for('edit_book', book_id=b.id) }}" class="link">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_book', book_id=b.id) }}"
+                          onsubmit="return confirm('Remove &quot;{{ b.title }}&quot; from the catalogue?');">
+                        <button type="submit" class="link link-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        {% if query %}No books match "{{ query }}".{% else %}No books in the catalogue yet.{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Edit book{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Edit book</h1>
+    <p class="page-sub">Update the catalogue entry for this title.</p>
+</div>
+
+<div class="panel panel-form">
+    <form method="POST" class="stacked-form" enctype="multipart/form-data">
+        <label for="book_code">Book ID</label>
+        <input type="text" id="book_code" name="book_code" value="{{ book.book_code or '' }}" required autofocus>
+
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required>
+
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required>
+
+        <div class="form-row">
+            <div>
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" value="{{ book.category or '' }}">
+            </div>
+            <div>
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" name="isbn" value="{{ book.isbn or '' }}">
+            </div>
+        </div>
+
+        <label for="copies">Total copies</label>
+        <input type="number" id="copies" name="copies" min="0" value="{{ book.total_copies }}" required>
+        <p class="field-hint">{{ book.available_copies }} of {{ book.total_copies }} currently available.</p>
+
+        <label for="pdf_file">Book PDF</label>
+        {% if book.pdf_filename %}
+            <p class="field-hint">
+                A PDF is already attached — <a href="{{ url_for('read_book_pdf', book_id=book.id) }}" class="link" target="_blank">view it</a>.
+                Choose a new file below to replace it.
+            </p>
+        {% endif %}
+        <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf">
+        {% if book.pdf_filename %}
+        <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:400;">
+            <input type="checkbox" name="remove_pdf" value="1" style="width:auto;">
+            Remove the attached PDF
+        </label>
+        {% endif %}
+
+        <div class="form-actions">
+            <a href="{{ url_for('books') }}" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

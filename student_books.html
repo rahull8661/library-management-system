@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Browse books{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Browse books</h1>
+    <p class="page-sub">You can borrow up to {{ max_loans }} books at a time. You currently have {{ active_loans }}.</p>
+</div>
+
+<form method="GET" class="search-bar">
+    <input type="text" name="q" placeholder="Search by Book ID, title, author, or category" value="{{ query }}">
+    <button type="submit" class="btn btn-secondary">Search</button>
+    {% if query %}<a href="{{ url_for('student_books') }}" class="link">Clear</a>{% endif %}
+</form>
+
+<div class="panel">
+    {% if books %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Available</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in books %}
+            <tr>
+                <td>{{ b.book_code or "—" }}</td>
+                <td class="cell-strong">{{ b.title }}</td>
+                <td>{{ b.author }}</td>
+                <td>{{ b.category or "—" }}</td>
+                <td>
+                    {% if b.available_copies > 0 %}
+                        <span class="badge badge-active">{{ b.available_copies }} available</span>
+                    {% else %}
+                        <span class="badge badge-warning">Not available</span>
+                    {% endif %}
+                </td>
+                <td class="cell-actions">
+                    {% if b.pdf_filename and b.id in already_borrowed %}
+                        <a href="{{ url_for('read_book_pdf', book_id=b.id) }}" class="link" target="_blank">Read</a>
+                    {% endif %}
+                    {% if b.id in already_borrowed %}
+                        <span class="field-hint">Already borrowed</span>
+                    {% elif b.available_copies < 1 %}
+                        <span class="field-hint">No copies left</span>
+                    {% elif active_loans >= max_loans %}
+                        <span class="field-hint">Loan limit reached</span>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('student_issue', book_id=b.id) }}">
+                            <button type="submit" class="btn btn-primary btn-small">Borrow</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        {% if query %}No books match "{{ query }}".{% else %}No books in the catalogue yet.{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

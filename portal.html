@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+
+{% block auth_content %}
+<div class="auth-screen">
+    <div class="portal-card">
+        <div class="auth-mark">Bk</div>
+        <h1>Bookkeeper</h1>
+        <p class="auth-sub">Choose how you'd like to sign in.</p>
+
+        <div class="portal-options">
+            <a href="{{ url_for('student_login') }}" class="portal-option">
+                <span class="portal-option-title">I'm a student</span>
+                <span class="portal-option-sub">Browse books, borrow, and return them yourself</span>
+            </a>
+            <a href="{{ url_for('login') }}" class="portal-option">
+                <span class="portal-option-title">I'm the librarian</span>
+                <span class="portal-option-sub">Manage the catalogue, members, and loans</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

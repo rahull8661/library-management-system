@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Members{% endblock %}
+
+{% block content %}
+<div class="page-header page-header-row">
+    <div>
+        <h1>Members</h1>
+        <p class="page-sub">Everyone registered with the library.</p>
+    </div>
+    <a href="{{ url_for('add_member') }}" class="btn btn-primary">+ Add a member</a>
+</div>
+
+<div class="panel">
+    {% if members %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Portal access</th>
+                <th>Joined on</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr>
+                <td class="cell-strong">{{ m.name }}</td>
+                <td>{{ m.email or "—" }}</td>
+                <td>{{ m.phone or "—" }}</td>
+                <td>
+                    {% if m.username %}
+                        <span class="badge badge-active">{{ m.username }}</span>
+                    {% else %}
+                        <span class="badge badge-neutral">No account</span>
+                    {% endif %}
+                </td>
+                <td>{{ m.joined_on }}</td>
+                <td class="cell-actions">
+                    <form method="POST" action="{{ url_for('delete_member', member_id=m.id) }}"
+                          onsubmit="return confirm('Remove {{ m.name }} from the library?');">
+                        <button type="submit" class="link link-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No members registered yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

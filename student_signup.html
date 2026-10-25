@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Create a student account{% endblock %}
+
+{% block auth_content %}
+<div class="auth-screen">
+    <div class="auth-card">
+        <div class="auth-mark">Bk</div>
+        <h1>Create an account</h1>
+        <p class="auth-sub">Register as a library member.</p>
+
+        <form method="POST" class="auth-form">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" required autofocus value="{{ form.name if form }}">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Optional" value="{{ form.email if form }}">
+
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" placeholder="Optional" value="{{ form.phone if form }}">
+
+            <label for="username">Choose a username</label>
+            <input type="text" id="username" name="username" required value="{{ form.username if form }}">
+
+            <label for="password">Choose a password</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="{{ url_for('student_login') }}" class="link">Log in</a></p>
+    </div>
+</div>
+{% endblock %}

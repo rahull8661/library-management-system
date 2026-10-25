@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Return a book{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Return a book</h1>
+    <p class="page-sub">Books returned after their due date carry a ₹5/day fine.</p>
+</div>
+
+<div class="panel">
+    {% if loans %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Issued on</th>
+                <th>Due on</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in loans %}
+            <tr>
+                <td>{{ l.book_code or "—" }}</td>
+                <td class="cell-strong">{{ l.book_title }}</td>
+                <td>{{ l.member_name }}</td>
+                <td>{{ l.issue_date }}</td>
+                <td>
+                    {% if l.due_date < today %}
+                        <span class="badge badge-warning">{{ l.due_date }} (overdue)</span>
+                    {% else %}
+                        {{ l.due_date }}
+                    {% endif %}
+                </td>
+                <td class="cell-actions">
+                    <form method="POST" action="{{ url_for('return_book') }}">
+                        <input type="hidden" name="transaction_id" value="{{ l.id }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Mark returned</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No books currently on loan.</div>
+    {% endif %}
+</div>
+{% endblock %}

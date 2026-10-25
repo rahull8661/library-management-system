@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <p class="page-sub">A snapshot of the library right now.</p>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ total_books }}</span>
+        <span class="stat-label">Total books in catalogue</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ total_members }}</span>
+        <span class="stat-label">Registered members</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ books_issued }}</span>
+        <span class="stat-label">Books currently issued</span>
+    </div>
+    <div class="stat-card {{ 'stat-card-warning' if overdue > 0 }}">
+        <span class="stat-value">{{ overdue }}</span>
+        <span class="stat-label">Overdue returns</span>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Recent activity</h2>
+        <a href="{{ url_for('transactions') }}" class="link">View full log</a>
+    </div>
+
+    {% if recent %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Issued on</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in recent %}
+            <tr>
+                <td>{{ t.book_code or "—" }}</td>
+                <td>{{ t.book_title }}</td>
+                <td>{{ t.member_name }}</td>
+                <td>{{ t.issue_date }}</td>
+                <td>
+                    {% if t.return_date %}
+                        <span class="badge badge-neutral">Returned {{ t.return_date }}</span>
+                    {% else %}
+                        <span class="badge badge-active">On loan</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No activity yet — issue your first book to get started.</div>
+    {% endif %}
+</div>
+{% endblock %}

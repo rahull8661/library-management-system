@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Issue a book{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Issue a book</h1>
+    <p class="page-sub">Loan period is 14 days from today.</p>
+</div>
+
+<div class="panel panel-form">
+    {% if books and members %}
+    <form method="POST" class="stacked-form">
+        <label for="book_id">Book</label>
+        <select id="book_id" name="book_id" required>
+            <option value="" disabled selected>Choose a book</option>
+            {% for b in books %}
+            <option value="{{ b.id }}">[{{ b.book_code or "—" }}] {{ b.title }} — {{ b.author }} ({{ b.available_copies }} available)</option>
+            {% endfor %}
+        </select>
+
+        <label for="member_id">Member</label>
+        <select id="member_id" name="member_id" required>
+            <option value="" disabled selected>Choose a member</option>
+            {% for m in members %}
+            <option value="{{ m.id }}">{{ m.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Issue book</button>
+        </div>
+    </form>
+    {% elif not books %}
+    <div class="empty-state">No copies available to issue right now. <a href="{{ url_for('add_book') }}" class="link">Add a book</a> or wait for a return.</div>
+    {% else %}
+    <div class="empty-state">No members registered yet. <a href="{{ url_for('add_member') }}" class="link">Add a member</a> first.</div>
+    {% endif %}
+</div>
+{% endblock %}
